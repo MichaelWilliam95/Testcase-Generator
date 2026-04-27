@@ -1,0 +1,122 @@
+.container {
+  display: flex;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.card {
+  width: 35rem;
+  margin: 0 auto;
+  border: 3px solid black;
+  border-radius: 1rem;
+}
+
+/* input section */
+.inputSection {
+  margin-top: 1.5rem;
+}
+
+/* row */
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.card h1{
+  display: flex;
+  justify-content: center;
+}
+.badge {
+  background: #ddd;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.8rem;
+}
+
+input {
+  width: 50px;
+  padding: 0.3rem;
+}
+
+button {
+  padding: 0.3rem 0.6rem;
+  cursor: pointer;
+}
+
+.delete {
+  background: #f88;
+}
+
+/* modal */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.4);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* .modal {
+  background: white;
+  padding: 2rem;
+  border-radius: 10px;
+  width: 70rem;
+  height: 40rem;
+}
+.formSection {
+  flex:1;
+  overflow-y: auto;        
+  max-height: 60vh;        
+  padding-right: 8px;
+  padding: 10px;
+}
+
+.modalButtons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+} */
+
+/* section bawah */
+.bottom-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;   
+  margin: 2rem;
+  padding: 1rem;
+  row-gap: 1.5rem;
+}
+
+/* button */
+.function-button {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;           
+  margin: 1.5rem;
+  
+}
+
+.function-button button {
+  background: #ccc;
+  border: 1px solid #888;
+  padding: 0.6rem 1.2rem;
+  cursor: pointer;
+  font-size: 1rem;
+  border-radius: 10px;
+}
+
+/* output box */
+.output-box {
+  width: 60%;           
+  max-width: 20rem;
+  height: 10rem;
+  background: #ccc;
+  border-radius: 5px;
+}
