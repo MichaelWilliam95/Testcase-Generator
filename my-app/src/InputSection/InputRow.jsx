@@ -11,48 +11,30 @@ export default function InputRow({
   return (
     <div className="row">
       <label>
-        Masukan {index + 1}
+        Masukan sebuah bilangan bulat positif
       </label>
 
       <input
         type="number"
         min="1"
-        value={data.slotCount}
-        onChange={(e) =>
-          onSlotChange(
-            e.target.value
-          )
-        }
+        // PERBAIKAN: Berikan fallback string kosong jika nilainya falsy/reset
+        value={data.slotCount || ""}
+        onChange={(e) => onSlotChange(e.target.value)}
       />
 
       <select
-        value={
-          data.printInput
-            ? "yes"
-            : "no"
-        }
-        onChange={(e) =>
-          onTogglePrint(
-            e.target.value === "yes"
-          )
-        }
+        value={data.printInput ? "yes" : "no"}
+        onChange={(e) => onTogglePrint(e.target.value === "yes")}
       >
-        <option value="yes">
-          Print
-        </option>
-        <option value="no">
-          Jangan Print
-        </option>
+        <option value="yes">Print</option>
+        <option value="no">Jangan Print</option>
       </select>
 
       <button onClick={onOpenModal}>
         Pengaturan
       </button>
 
-      <button
-        className="delete"
-        onClick={onDelete}
-      >
+      <button className="delete" onClick={onDelete}>
         Hapus
       </button>
     </div>

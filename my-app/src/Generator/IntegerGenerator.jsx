@@ -1,171 +1,90 @@
+import { generateString } from "./StringGenerator";
+import { generateFloat } from "./FloatGenerator";
+
+// Helper untuk membuat angka acak berdasarkan rentang min & max
 function randomInt(min, max) {
-  return Math.floor(
-    Math.random() * (max - min + 1)
-  ) + min;
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+// Helper untuk membuat angka acak berdasarkan jumlah digit yang diinginkan
 function generateByDigit(digit) {
   const min = Math.pow(10, digit - 1);
-  const max =
-    Math.pow(10, digit) - 1;
-
+  const max = Math.pow(10, digit) - 1;
   return randomInt(min, max);
 }
 
-function applyMultiple(
-  value,
-  multipleOf,
-  min,
-  max
-) {
+// Helper untuk menerapkan aturan kelipatan angka (Multiple Of) secara aman
+function applyMultiple(value, multipleOf, min, max) {
   if (!multipleOf) return value;
 
-  const multiple =
-    Number(multipleOf);
+  const multiple = Number(multipleOf);
+  let result = Math.round(value / multiple) * multiple;
 
-  let result =
-    Math.round(
-      value / multiple
-    ) * multiple;
-
-  if (result < min)
-    result = min;
-
-  if (result > max)
-    result = max;
+  if (result < min) result = min;
+  if (result > max) result = max;
 
   return result;
 }
 
-function generateSingleValue(
-  inputConfig
-) {
-  const range =
-    inputConfig.range || {};
+// Fungsi inti untuk memproduksi SATU nilai angka acak berdasarkan konfigurasi
+function generateSingleValue(inputConfig) {
+  const range = inputConfig.range || {};
 
-  const min = range.min
-    ? Number(range.min)
-    : 1;
+  const min = range.min !== "" ? Number(range.min) : 1;
+  const max = range.max !== "" ? Number(range.max) : 100;
+  const digit = range.digit !== "" ? Number(range.digit) : null;
 
-  const max = range.max
-    ? Number(range.max)
-    : 100;
+  let value = digit ? generateByDigit(digit) : randomInt(min, max);
 
-  const digit = range.digit
-    ? Number(range.digit)
-    : null;
-
-  let value = digit
-    ? generateByDigit(digit)
-    : randomInt(min, max);
-
-  value = applyMultiple(
-    value,
-    range.multipleOf,
-    min,
-    max
-  );
+  value = applyMultiple(value, range.multipleOf, min, max);
 
   return value;
 }
 
-function sortValues(
-  values,
-  order
-) {
+// Helper untuk melakukan pengurutan data (Sorting) jika diaktifkan
+function sortValues(values, order) {
   if (order === "increment") {
-    return values.sort(
-      (a, b) => a - b
-    );
+    return values.sort((a, b) => a - b);
   }
-
   if (order === "decrement") {
-    return values.sort(
-      (a, b) => b - a
-    );
+    return values.sort((a, b) => b - a);
   }
-
   return values;
 }
 
-function generateRecursive(
-  inputConfig
-) {
-  const firstValue =
-    generateSingleValue(
-      inputConfig
-    );
+/* =========================================================================
+   MAIN EXPORT: SUDAH DISINKRONISASI DENGAN APP.JSX (ANTI-DOUBLE-LOOPING)
+========================================================================= */
+export function generateInteger(config, slotCount = 1) {
+  const input = config.inputs?.[0];
+  if (!input) return "";
 
-  let result = String(
-    firstValue
-  );
-
-  if (
-    inputConfig.isNested &&
-    inputConfig.children?.length
-  ) {
-    const childConfig =
-      inputConfig.children[0];
-
-    let childValues = [];
-
-    for (
-      let i = 0;
-      i < firstValue;
-      i++
-    ) {
-      childValues.push(
-        generateSingleValue(
-          childConfig
-        )
-      );
-    }
-
-    childValues = sortValues(
-      childValues,
-      childConfig.range
-        ?.order
-    );
-
-    result +=
-      "\n" +
-      childValues.join(" ");
-  }
-
-  return result;
-}
-
-export function generateInteger(
-  config,
-  slotCount = 1
-) {
-  const input =
-    config.inputs[0];
-
+  /* KASUS A: INPUT BERSARANG (NESTED CHILD)
+    Saat mode nested aktif, App.jsx akan memanggil fungsi ini dengan slotCount = 1.
+    Tugas generator di sini HANYA mengembalikan 1 nilai angka murni (string) 
+    tanpa bumbu spasi atau enter sama sekali.
+  */
   if (input.isNested) {
-    return generateRecursive(
-      input
-    );
+    return String(generateSingleValue(input));
   }
 
+  /* KASUS B: DATA TUNGGAL BIASA ATAU ARRAY 2D (NON-NESTED)
+    Logika di bawah ini tetap dipertahankan untuk backward-compatibility 
+    jika Anda men-generate data kolom array biasa.
+  */
   let values = [];
-
-  for (
-    let i = 0;
-    i < slotCount;
-    i++
-  ) {
-    values.push(
-      generateSingleValue(
-        input
-      )
-    );
+  for (let i = 0; i < slotCount; i++) {
+    values.push(generateSingleValue(input));
   }
 
-  values = sortValues(
-    values,
-    input.range?.order
-  );
+  // Jalankan aturan sorting (increment/decrement) jika ada
+  values = sortValues(values, input.range?.order);
 
-  return values.join(" ");
+  // Jika ini bagian dari struktur Array 2D, gabungkan kolom ke samping dengan spasi
+  if (config.count && config.count > 0) {
+    return values.map(String).join(" ");
+  }
+
+  // Jika Single Input biasa, gabungkan ke bawah dengan enter jika slotCount > 1
+  return slotCount === 1 ? String(values[0]) : values.map(String).join("\n");
 }
